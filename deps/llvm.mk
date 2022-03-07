@@ -28,7 +28,7 @@ endif
 
 ifeq ($(USE_POLYGEIST),1)
 BUILD_LLVM_CLANG := 1
-$(eval $(call git-external,llvm/polygeist,POLYGEIST,CMakeLists.txt,,$(SRCCACHE)))
+$(eval $(call git-external,polygeist,POLYGEIST,CMakeLists.txt,,$(SRCCACHE)))
 # because it's a build requirement
 endif
 
@@ -85,7 +85,7 @@ LLVM_CMAKE += -DLLVM_EXTERNAL_PROJECTS="$(LLVM_EXTERNAL_PROJECTS)"
 LLVM_CMAKE += -DLLVM_ENABLE_RUNTIMES="$(LLVM_ENABLE_RUNTIMES)"
 
 ifeq ($(USE_POLYGEIST),1)
-LLVM_CMAKE += -DLLVM_EXTERNAL_POLYGEIST_SOURCE_DIR=$(LLVM_MONOSRC_DIR)/polygeist
+LLVM_CMAKE += -DLLVM_EXTERNAL_POLYGEIST_SOURCE_DIR=$(SRCCACHE)/${POLYGEIST_SRC_DIR}
 LLVM_CMAKE += -DLLVM_CXX_STD=c++14
 endif
 ifeq ($(USE_RV),1)
@@ -306,6 +306,10 @@ compile-llvm: $(LLVM_BUILDDIR_withtype)/build-compiled
 fastcheck-llvm: #none
 check-llvm: $(LLVM_BUILDDIR_withtype)/build-checked
 #todo: LLVM make check target is broken on julia.mit.edu (and really slow elsewhere)
+
+ifeq ($(USE_POLYGEIST),1) 
+$(SRCCACHE)/$(LLVM_SRC_DIR)/source-extracted: $(SRCCACHE)/$(POLYGEIST_SRC_DIR)/source-extracted
+endif
 
 else # USE_BINARYBUILDER_LLVM
 
